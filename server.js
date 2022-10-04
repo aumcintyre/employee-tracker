@@ -12,4 +12,5 @@ const runPrompt = () => {
     ])
 }
 
+console.log("Welcome to the Employee Tracker!");
 runPrompt()
