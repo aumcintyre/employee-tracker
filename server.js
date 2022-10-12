@@ -53,7 +53,7 @@ console.log(response.choice);
             }
 
             if (response.choice === 'View All Roles') {
-                console.log('Showing all roles');
+                showRoles();
             }
 
             if (response.choice === 'Add Role') {
@@ -61,7 +61,7 @@ console.log(response.choice);
             }
 
             if (response.choice === 'View All Departments') {
-                console.log('Showing all departments');
+                showDepartments();
             }
 
             if (response.choice === 'Add Department') {
@@ -101,16 +101,32 @@ updateEmployee = () => {
     console.log('Showing all employees');
 }
 
-viewRoles = () => {
-    console.log('Showing all employees');
+showRoles = () => {
+    console.log('Showing all roles');
+
+    const sql = `SELECT * FROM role`
+
+    db.query(sql, (err, rows)=> {
+        if (err) throw (err);
+        console.table(rows);
+        runPrompt();
+    })
 }
 
 addRole = () => {
     console.log('Showing all employees');
 }
 
-viewDepartments = () => {
-    console.log('Showing all employees');
+showDepartments = () => {
+    console.log('Showing all departments');
+
+    const sql = `SELECT * FROM department`
+
+    db.query(sql, (err, rows)=> {
+        if (err) throw (err);
+        console.table(rows);
+        runPrompt();
+    })
 }
 
 addDepartment = () => {
