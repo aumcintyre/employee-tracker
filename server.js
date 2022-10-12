@@ -11,35 +11,37 @@ const runPrompt = () => {
         }
     ])
         .then((response) => {
+console.log(response.choice);
 
-//WHY ISN'T THIS LINKING???
+
+//Prompt to ask the user where they would like to begin
 
 
-            if (response === 'View All Employees') {
+            if (response.choice === 'View All Employees') {
                 showEmployees();
             }
 
-            if (choices === 'Add Employee') {
+            if (response.choice === 'Add Employee') {
                 console.log('Adding new employee');
             }
 
-            if (choices === 'Update Employee Roles') {
+            if (response.choice === 'Update Employee Roles') {
                 console.log('Updating employee role');
             }
 
-            if (choices === 'View All Roles') {
+            if (response.choice === 'View All Roles') {
                 console.log('Showing all roles');
             }
 
-            if (choices === 'Add Role') {
+            if (response.choice === 'Add Role') {
                 console.log('Adding new role');
             }
 
-            if (choices === 'View All Departments') {
+            if (response.choice === 'View All Departments') {
                 console.log('Showing all departments');
             }
 
-            if (choices === 'Add Department') {
+            if (response.choice === 'Add Department') {
                 console.log('Adding new department');
             }
         })
@@ -47,6 +49,36 @@ const runPrompt = () => {
 
 console.log("Welcome to the Employee Tracker!");
 runPrompt()
+
+showEmployees = () => {
+    console.log('Showing all employees');
+
+
+}
+
+addEmployee = () => {
+    console.log('Adding new employees');
+
+    // inquirer.prompt([
+    //     {
+    //         type: 'input',
+    //         name: 'firstName',
+    //         message: "What is the employee's first name?",
+    //     }
+    // ])
+}
+
+updateEmployee = () => {
+    console.log('Showing all employees');
+}
+
+showEmployees = () => {
+    console.log('Showing all employees');
+}
+
+showEmployees = () => {
+    console.log('Showing all employees');
+}
 
 showEmployees = () => {
     console.log('Showing all employees');
