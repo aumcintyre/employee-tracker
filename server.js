@@ -57,7 +57,7 @@ const runPrompt = () => {
             }
 
             if (response.choice === 'Add Role') {
-                console.log('Adding new role');
+                addRole();
             }
 
             if (response.choice === 'View All Departments') {
@@ -76,7 +76,17 @@ const runPrompt = () => {
 showEmployees = () => {
     console.log('Showing all employees');
 
-    const sql = `SELECT * FROM employee`
+    const sql = `SELECT employee.id, 
+        employee.first_name, 
+        employee.last_name, 
+        role.title, 
+        department.name AS department, 
+        role.salary, 
+        CONCAT (manager.first_name, " ", manager.last_name) AS manager
+    FROM employee 
+        LEFT JOIN role ON employee.role_ID = role.id 
+        LEFT JOIN department ON role.department_id = department.id 
+        LEFT JOIN employee manager ON employee.manager_id = manager.id`
 
     db.query(sql, (err, rows) => {
         if (err) throw (err);
@@ -99,18 +109,6 @@ addEmployee = () => {
             name: 'lastName',
             message: "What is the employee's last name?"
         },
-        // {
-        //     type: 'list',
-        //     name: 'employeeRole',
-        //     message: "What is the employee's job title?",
-        //     choices: ['Software Engineer', 'Full Stack Developer', 'Accountant', 'Financial Analyst', 'Brand Ambassador', 'Project Manager']
-        // },
-        // {
-        //     type: 'input',
-        //     name: 'managerId',
-        //     default: null,
-        //     message: "Enter the manager's ID for this employee. If none, leave blank."
-        // }
     ])
         .then(response => {
             const newEmployee = [response.firstName, response.lastName]
@@ -135,6 +133,7 @@ addEmployee = () => {
                         const role = roleResponse.role;
                         newEmployee.push(role)
 
+                        //Same as above, this will pull all employees from the employee table and allow the manager to be chosen from a list, with the value of the choice being pushed to the new array as the manager_id, which is a foreign key for employee(id)
                         const managerSql = `Select * from employee`;
 
                         db.query(managerSql, (err, response) => {
@@ -155,7 +154,7 @@ addEmployee = () => {
                                     newEmployee.push(manager);
 
                                     const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)`;
-                                    
+
                                     db.query(sql, newEmployee, (err, result) => {
                                         if (err) throw (err);
                                         console.log("Successfully added employee!");
@@ -165,12 +164,12 @@ addEmployee = () => {
                                 })
                         })
                     })
-            }) 
+            })
 
 
 
-      
-    })
+
+        })
 }
 
 updateEmployee = () => {
@@ -180,7 +179,7 @@ updateEmployee = () => {
 showRoles = () => {
     console.log('Showing all roles');
 
-    const sql = `SELECT * FROM role`
+    const sql = `SELECT role.id, role.title, department.name AS department FROM role INNER JOIN department ON role.department_id = department.id`
 
     db.query(sql, (err, rows) => {
         if (err) throw (err);
@@ -190,7 +189,55 @@ showRoles = () => {
 }
 
 addRole = () => {
-    console.log('Showing all employees');
+    console.log('Adding new role');
+
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'role',
+            message: 'What role should be added?'
+        },
+        {
+            type: 'input',
+            name: 'salary',
+            message: 'What is the salary for this role?'
+        }
+    ])
+    .then(response => {
+        const newRole = [response.role, response.salary];
+
+        //Again we grab values from the department table so we can use them as choices on the list prompt to give the new role an existing department
+
+        const roleSql = `SELECT name, id FROM department`;
+
+        db.query(roleSql, (err, response) => {
+            if (err) throw err;
+
+            const department = response.map(({ name, id }) => ({ name: name, value: id }));
+
+            inquirer.prompt([
+                {
+                    type: 'list',
+                    name: 'department',
+                    message: 'Which department is this new role in?',
+                    choices: department
+                }
+            ])
+            .then(deptResponse => {
+                const department = deptResponse.department;
+                newRole.push(department);
+
+                const sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`
+                db.query(sql, newRole, (err, response) => {
+                    if (err) throw err;
+
+                    console.log(response.role + " added to roles!");
+                    showRoles();
+                })
+            })
+        })
+
+    })
 }
 
 showDepartments = () => {
