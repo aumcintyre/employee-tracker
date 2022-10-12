@@ -243,7 +243,7 @@ addRole = () => {
 showDepartments = () => {
     console.log('Showing all departments');
 
-    const sql = `SELECT * FROM department`
+    const sql = `SELECT department.id AS id, department.name AS department FROM department`
 
     db.query(sql, (err, rows) => {
         if (err) throw (err);
