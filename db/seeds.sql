@@ -13,7 +13,7 @@ VALUES
 ('Software Engineer', 120000, 1),
 ('Full Stack Developer', 95000, 1),
 ('Accountant', 120000, 2), 
-('Finanical Analyst', 150000, 2),
+('Financial Analyst', 150000, 2),
 ('Brand Ambassador', 35000, 3), 
 ('Project Manager', 100000, 4);
 
