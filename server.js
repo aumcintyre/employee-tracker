@@ -220,7 +220,7 @@ updateEmployee = () => {
 
                         const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
 
-                        db.query(sql, (err, response) => {
+                        db.query(sql, updatedEmployee, (err, response) => {
                             if (err) throw err;
 
                             console.log("Successfully updated employee!");
