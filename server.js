@@ -48,8 +48,8 @@ const runPrompt = () => {
                 addEmployee();
             }
 
-            if (response.choice === 'Update Employee Roles') {
-                console.log('Updating employee role');
+            if (response.choice === 'Update Employee Role') {
+                updateEmployee();
             }
 
             if (response.choice === 'View All Roles') {
@@ -70,8 +70,6 @@ const runPrompt = () => {
         })
 }
 
-// console.log("Welcome to the Employee Tracker!");
-// runPrompt()
 
 showEmployees = () => {
     console.log('Showing all employees');
@@ -174,6 +172,66 @@ addEmployee = () => {
 
 updateEmployee = () => {
     console.log('Showing all employees');
+
+    //First pull data from the employee table so we know what to change
+    const employeeSql = `SELECT * FROM employee`;
+
+    db.query(employeeSql, (err, response) => {
+
+        if (err) throw err;
+        const employees = response.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, value: id }));
+
+        inquirer.prompt([
+            {
+                type: 'list',
+                name: 'name',
+                message: 'Which employee will be updated?',
+                choices: employees
+            }
+        ])
+            .then(empResponse => {
+                const employee = empResponse.name;
+                const updatedEmployee = [];
+                updatedEmployee.push(employee);
+
+                const roleSql = `SELECT * FROM role`;
+
+                db.query(roleSql, (err, response) => {
+                    if (err) throw err;
+
+                    const roles = response.map(({ id, title }) => ({ name: title, value: id}));
+
+                    inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'role',
+                            message: "What is the employee's new role?",
+                            choices: roles
+                        }
+                    ])
+                    .then(roleResponse => {
+                        const role = roleResponse.role;
+                        updatedEmployee.push(role);
+
+                        let employee = updatedEmployee[0]
+                        updatedEmployee[0] = role
+                        updatedEmployee[1] = employee
+                        
+
+                        const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
+
+                        db.query(sql, (err, response) => {
+                            if (err) throw err;
+
+                            console.log("Successfully updated employee!");
+                            showEmployees();
+                            runPrompt();
+                        })
+                    })
+                })
+            })
+    })
+
 }
 
 showRoles = () => {
@@ -203,41 +261,41 @@ addRole = () => {
             message: 'What is the salary for this role?'
         }
     ])
-    .then(response => {
-        const newRole = [response.role, response.salary];
+        .then(response => {
+            const newRole = [response.role, response.salary];
 
-        //Again we grab values from the department table so we can use them as choices on the list prompt to give the new role an existing department
+            //Again we grab values from the department table so we can use them as choices on the list prompt to give the new role an existing department
 
-        const roleSql = `SELECT name, id FROM department`;
+            const roleSql = `SELECT name, id FROM department`;
 
-        db.query(roleSql, (err, response) => {
-            if (err) throw err;
+            db.query(roleSql, (err, response) => {
+                if (err) throw err;
 
-            const department = response.map(({ name, id }) => ({ name: name, value: id }));
+                const department = response.map(({ name, id }) => ({ name: name, value: id }));
 
-            inquirer.prompt([
-                {
-                    type: 'list',
-                    name: 'department',
-                    message: 'Which department is this new role in?',
-                    choices: department
-                }
-            ])
-            .then(deptResponse => {
-                const department = deptResponse.department;
-                newRole.push(department);
+                inquirer.prompt([
+                    {
+                        type: 'list',
+                        name: 'department',
+                        message: 'Which department is this new role in?',
+                        choices: department
+                    }
+                ])
+                    .then(deptResponse => {
+                        const department = deptResponse.department;
+                        newRole.push(department);
 
-                const sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`
-                db.query(sql, newRole, (err, response) => {
-                    if (err) throw err;
+                        const sql = `INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)`
+                        db.query(sql, newRole, (err, response) => {
+                            if (err) throw err;
 
-                    console.log(response.role + " added to roles!");
-                    showRoles();
-                })
+                            console.log(response.role + " added to roles!");
+                            showRoles();
+                        })
+                    })
             })
-        })
 
-    })
+        })
 }
 
 showDepartments = () => {
@@ -262,16 +320,16 @@ addDepartment = () => {
             message: 'What is the name of the new department?'
         },
     ])
-    .then(response => {
+        .then(response => {
 
-        const sql = `INSERT INTO department (name) VALUES (?)`;
+            const sql = `INSERT INTO department (name) VALUES (?)`;
 
-        db.query(sql, response.department, (err, results) => {
-            if (err) throw err;
-            console.log(response.department + " added to departments!");
+            db.query(sql, response.department, (err, results) => {
+                if (err) throw err;
+                console.log(response.department + " added to departments!");
 
-            showDepartments();
-            runPrompt();
+                showDepartments();
+                runPrompt();
+            })
         })
-    })
 }
