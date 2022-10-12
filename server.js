@@ -30,7 +30,7 @@ const runPrompt = () => {
             type: 'list',
             name: 'choice',
             message: 'What would you like to do?',
-            choices: ['View All Employees', 'Add Employee', 'Update Employee Role', 'View All Roles', 'Add Role', 'View All Departments', 'Add Department', 'Close Employee Manager']
+            choices: ['View All Departments', 'View All Roles', 'View All Employees', 'Add Department', 'Add Role', 'Add Employee', 'Update Employee Role', 'Close Employee Manager']
         }
     ])
         .then((response) => {
@@ -40,8 +40,24 @@ const runPrompt = () => {
             //Prompt to ask the user where they would like to begin
 
 
+            if (response.choice === 'View All Departments') {
+                showDepartments();
+            }
+
+            if (response.choice === 'View All Roles') {
+                showRoles();
+            }
+
             if (response.choice === 'View All Employees') {
                 showEmployees();
+            }
+
+            if (response.choice === 'Add Department') {
+                addDepartment();
+            }
+
+            if (response.choice === 'Add Role') {
+                addRole();
             }
 
             if (response.choice === 'Add Employee') {
@@ -52,21 +68,6 @@ const runPrompt = () => {
                 updateEmployee();
             }
 
-            if (response.choice === 'View All Roles') {
-                showRoles();
-            }
-
-            if (response.choice === 'Add Role') {
-                addRole();
-            }
-
-            if (response.choice === 'View All Departments') {
-                showDepartments();
-            }
-
-            if (response.choice === 'Add Department') {
-                addDepartment();
-            }
             if (response.choice === 'Close Employee Manager') {
                 db.end();
                 console.log("Employee Manager app closed!");
@@ -203,7 +204,7 @@ updateEmployee = () => {
                 db.query(roleSql, (err, response) => {
                     if (err) throw err;
 
-                    const roles = response.map(({ id, title }) => ({ name: title, value: id}));
+                    const roles = response.map(({ id, title }) => ({ name: title, value: id }));
 
                     inquirer.prompt([
                         {
@@ -213,25 +214,25 @@ updateEmployee = () => {
                             choices: roles
                         }
                     ])
-                    .then(roleResponse => {
-                        const role = roleResponse.role;
-                        updatedEmployee.push(role);
+                        .then(roleResponse => {
+                            const role = roleResponse.role;
+                            updatedEmployee.push(role);
 
-                        let employee = updatedEmployee[0]
-                        updatedEmployee[0] = role
-                        updatedEmployee[1] = employee
-                        
+                            let employee = updatedEmployee[0]
+                            updatedEmployee[0] = role
+                            updatedEmployee[1] = employee
 
-                        const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
 
-                        db.query(sql, updatedEmployee, (err, response) => {
-                            if (err) throw err;
+                            const sql = `UPDATE employee SET role_id = ? WHERE id = ?`;
 
-                            console.log("Successfully updated employee!");
-                            showEmployees();
-                            runPrompt();
+                            db.query(sql, updatedEmployee, (err, response) => {
+                                if (err) throw err;
+
+                                console.log("Successfully updated employee!");
+                                showEmployees();
+                                runPrompt();
+                            })
                         })
-                    })
                 })
             })
     })
