@@ -65,7 +65,7 @@ const runPrompt = () => {
             }
 
             if (response.choice === 'Add Department') {
-                console.log('Adding new department');
+                addDepartment();
             }
         })
 }
@@ -253,5 +253,25 @@ showDepartments = () => {
 }
 
 addDepartment = () => {
-    console.log('Showing all employees');
+    console.log('Adding new department');
+
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'department',
+            message: 'What is the name of the new department?'
+        },
+    ])
+    .then(response => {
+
+        const sql = `INSERT INTO department (name) VALUES (?)`;
+
+        db.query(sql, response.department, (err, results) => {
+            if (err) throw err;
+            console.log(response.department + " added to departments!");
+
+            showDepartments();
+            runPrompt();
+        })
+    })
 }
