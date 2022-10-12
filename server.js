@@ -1,5 +1,28 @@
 const inquirer = require('inquirer')
-const mysql2 = require('mysql2')
+const mysql = require('mysql2')
+const conTable = require('console.table')
+
+require('dotenv').config()
+
+const db = mysql.createConnection(
+    {
+      host: 'localhost',
+      user: 'root',
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME
+    },
+  );
+
+  db.connect(err => {
+    if (err) throw (err);
+    console.log("Connected to " + process.env.DB_NAME);
+    nowConnected();
+  });
+
+nowConnected = () => {
+    console.log("EMPLOYEE MANAGER");
+    runPrompt();
+}
 
 const runPrompt = () => {
     inquirer.prompt([
@@ -47,8 +70,8 @@ console.log(response.choice);
         })
 }
 
-console.log("Welcome to the Employee Tracker!");
-runPrompt()
+// console.log("Welcome to the Employee Tracker!");
+// runPrompt()
 
 showEmployees = () => {
     console.log('Showing all employees');
