@@ -76,8 +76,14 @@ console.log(response.choice);
 showEmployees = () => {
     console.log('Showing all employees');
 
+    const sql = `SELECT * FROM employee`
 
-}
+    db.query(sql, (err, rows)=> {
+        if (err) throw (err);
+        console.table(rows);
+        runPrompt();
+    })
+};
 
 addEmployee = () => {
     console.log('Adding new employees');
@@ -95,14 +101,18 @@ updateEmployee = () => {
     console.log('Showing all employees');
 }
 
-showEmployees = () => {
+viewRoles = () => {
     console.log('Showing all employees');
 }
 
-showEmployees = () => {
+addRole = () => {
     console.log('Showing all employees');
 }
 
-showEmployees = () => {
+viewDepartments = () => {
+    console.log('Showing all employees');
+}
+
+addDepartment = () => {
     console.log('Showing all employees');
 }
