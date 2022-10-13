@@ -1,4 +1,4 @@
-# Employee-Tracker (CMS)
+# Employee-Tracker
 ![Github license](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ## Description 
